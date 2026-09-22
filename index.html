@@ -112,6 +112,11 @@ tr:hover{background:#FAFBFC}
 .empty-state i{font-size:48px;margin-bottom:12px;color:#D1D8E0}
 .empty-state small{display:block;margin-top:8px;font-size:11px;color:#B2BEC3}
 
+/* Machine History Specific */
+.machine-id-badge{font-family:monospace;font-size:11px;background:var(--gray-light);padding:3px 10px;border-radius:8px;color:var(--text2);font-weight:600}
+.summary-row-active{background:var(--primary-light)!important}
+.summary-row-active td{border-bottom-color:#B8DEF5!important}
+
 /* Mobile */
 @media(max-width:768px){
   .sidebar{width:100%;position:fixed;bottom:0;top:auto;left:0;right:0;height:auto;padding:8px;display:flex;overflow-x:auto;border-right:none;border-top:1px solid var(--border);z-index:200}
@@ -152,6 +157,7 @@ tr:hover{background:#FAFBFC}
     <nav>
       <a class="active" onclick="showSection('overview',this)"><i class="fas fa-chart-line"></i> Overview</a>
       <a onclick="showSection('botol',this)"><i class="fas fa-history"></i> History Botol</a>
+      <a onclick="showSection('history-mesin',this)"><i class="fas fa-clipboard-list"></i> History Mesin</a>
       <a onclick="showSection('users',this)"><i class="fas fa-users"></i> Daftar User</a>
       <a onclick="showSection('mesin',this)"><i class="fas fa-microchip"></i> Monitor Mesin</a>
       <a onclick="showSection('withdrawals',this)"><i class="fas fa-money-bill-wave"></i> Penarikan</a>
@@ -236,6 +242,113 @@ tr:hover{background:#FAFBFC}
           <table>
             <thead><tr><th>Waktu</th><th>User (Email)</th><th>Botol Masuk</th><th>Saldo Sekarang</th><th>Nilai</th></tr></thead>
             <tbody id="botol-list"><tr><td colspan="5" class="empty-state"><i class="fas fa-spinner fa-spin"></i><br>Memuat...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ HISTORY MESIN ============ -->
+    <section id="section-history-mesin" class="section">
+      <div class="page-header">
+        <h1>📋 History Botol per Mesin</h1>
+        <button class="refresh-btn" onclick="loadMachineHistory()"><i class="fas fa-sync-alt"></i> Refresh</button>
+      </div>
+
+      <!-- Filter Mesin -->
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-body" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+          <div style="flex:1;min-width:200px">
+            <label style="display:block;font-weight:600;font-size:12px;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Pilih Mesin</label>
+            <select id="filter-machine-id" class="search-bar" onchange="renderMachineHistory()">
+              <option value="">-- Semua Mesin --</option>
+            </select>
+          </div>
+          <div style="flex:1;min-width:200px">
+            <label style="display:block;font-weight:600;font-size:12px;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Cari User (Email)</label>
+            <input type="text" id="search-machine-user" class="search-bar" placeholder="🔍 Cari email..." oninput="renderMachineHistory()">
+          </div>
+          <div style="flex:0 0 auto;padding-top:22px">
+            <button class="btn btn-secondary" onclick="resetMachineFilter()">
+              <i class="fas fa-undo"></i> Reset
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ringkasan Stat -->
+      <div class="stats-grid" id="machine-summary-grid">
+        <div class="stat-box">
+          <div class="icon blue"><i class="fas fa-microchip"></i></div>
+          <div class="label">Total Mesin Aktif</div>
+          <div class="value" id="mh-total-machines">-</div>
+          <div class="sub">Yang pernah input botol</div>
+        </div>
+        <div class="stat-box">
+          <div class="icon green"><i class="fas fa-recycle"></i></div>
+          <div class="label">Total Botol (Filter)</div>
+          <div class="value" id="mh-total-botol">-</div>
+          <div class="sub">Dari mesin terpilih</div>
+        </div>
+        <div class="stat-box">
+          <div class="icon gold"><i class="fas fa-coins"></i></div>
+          <div class="label">Total Nilai (Filter)</div>
+          <div class="value" id="mh-total-nilai">Rp 0</div>
+          <div class="sub">Konversi rupiah</div>
+        </div>
+        <div class="stat-box">
+          <div class="icon purple"><i class="fas fa-users"></i></div>
+          <div class="label">Unique User (Filter)</div>
+          <div class="value" id="mh-total-users">-</div>
+          <div class="sub">User unik input botol</div>
+        </div>
+      </div>
+
+      <!-- Tabel Ringkasan per Mesin -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fas fa-chart-bar"></i> Ringkasan per Mesin</h3>
+          <span class="badge info" id="mh-summary-count">0 mesin</span>
+        </div>
+        <div class="card-body no-pad">
+          <table>
+            <thead>
+              <tr>
+                <th>Mesin ID</th>
+                <th>Total Botol</th>
+                <th>Total Nilai</th>
+                <th>Unique User</th>
+                <th>Terakhir Aktif</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="machine-summary-list">
+              <tr><td colspan="6" class="empty-state"><i class="fas fa-spinner fa-spin"></i><br>Memuat...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tabel Detail History -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fas fa-list"></i> Detail History Botol</h3>
+          <span class="badge info" id="mh-detail-count">0 transaksi</span>
+        </div>
+        <div class="card-body no-pad">
+          <table>
+            <thead>
+              <tr>
+                <th>Waktu</th>
+                <th>Mesin ID</th>
+                <th>User (Email)</th>
+                <th>Botol Masuk</th>
+                <th>Saldo Setelah</th>
+                <th>Nilai</th>
+              </tr>
+            </thead>
+            <tbody id="machine-history-list">
+              <tr><td colspan="6" class="empty-state"><i class="fas fa-spinner fa-spin"></i><br>Memuat...</td></tr>
+            </tbody>
           </table>
         </div>
       </div>
@@ -432,7 +545,7 @@ const auth = firebase.auth();
 // KONFIGURASI ADMIN - GANTI EMAIL ADMIN DI SINI!
 // ============================================================
 const ADMIN_EMAILS = [
-  "tohitmi669@gmail.com",   // Ganti dengan email admin Anda
+  "tohitmi669@gmail.com",
   "admin@recoin.id"
 ];
 const HARGA_PER_BOTOL = 25;
@@ -447,6 +560,9 @@ let allMachines = [];
 let allInvestors = [];
 let allBroadcasts = [];
 let allTransactions = [];
+let allMachineHistory = [];
+let machineSummary = {};
+let selectedMachineId = '';
 
 // ============================================================
 // UTILITY
@@ -525,6 +641,7 @@ function showSection(name,el){
   if(el)el.classList.add('active');
   
   if(name==='botol')loadBotolHistory();
+  if(name==='history-mesin')loadMachineHistory();
   if(name==='users')loadUsers();
   if(name==='mesin')loadMachines();
   if(name==='withdrawals')loadWithdrawals();
@@ -539,6 +656,7 @@ function showSection(name,el){
 function loadAll(){
   loadOverview();
   loadBotolHistory();
+  loadMachineHistory();
   loadUsers();
   loadMachines();
   loadWithdrawals();
@@ -551,7 +669,6 @@ function loadAll(){
 // OVERVIEW
 // ============================================================
 function loadOverview(){
-  // Accounts
   db.ref('/accounts').on('value',snap=>{
     allUsers=[];
     let totalBotol=0;
@@ -576,7 +693,6 @@ function loadOverview(){
     console.warn('[Overview/accounts]', err.message);
   });
   
-  // Merchants
   db.ref('/merchants').on('value',snap=>{
     allMerchants=[];
     snap.forEach(c=>{allMerchants.push({id:c.key,...c.val()})});
@@ -586,7 +702,6 @@ function loadOverview(){
     console.warn('[Overview/merchants]', err.message);
   });
   
-  // Products
   db.ref('/products').on('value',snap=>{
     allProducts=[];
     snap.forEach(c=>{allProducts.push({id:c.key,...c.val()})});
@@ -595,7 +710,6 @@ function loadOverview(){
     console.warn('[Overview/products]', err.message);
   });
   
-  // Withdrawals count
   db.ref('/withdrawals').on('value',snap=>{
     let pending=0;
     snap.forEach(child=>{
@@ -608,7 +722,7 @@ function loadOverview(){
 }
 
 // ============================================================
-// HISTORY BOTOL (FIXED - tanpa .catch pada .on)
+// HISTORY BOTOL (GLOBAL)
 // ============================================================
 function loadBotolHistory(){
   db.ref('/botol_history').limitToLast(200).on('value',snap=>{
@@ -651,6 +765,293 @@ function renderBotolTable(data){
     </tr>`;
   });
   el.innerHTML=h;
+}
+
+// ============================================================
+// HISTORY BOTOL PER MESIN (BARU!)
+// ============================================================
+function loadMachineHistory() {
+  const el = document.getElementById('machine-history-list');
+  const summaryEl = document.getElementById('machine-summary-list');
+  if (el) el.innerHTML = '<tr><td colspan="6" class="empty-state"><i class="fas fa-spinner fa-spin"></i><br>Memuat...</td></tr>';
+  if (summaryEl) summaryEl.innerHTML = '<tr><td colspan="6" class="empty-state"><i class="fas fa-spinner fa-spin"></i><br>Memuat...</td></tr>';
+
+  allMachineHistory = [];
+  machineSummary = {};
+
+  // Sumber utama: /botol_history
+  db.ref('/botol_history').limitToLast(500).once('value')
+    .then(snap => {
+      snap.forEach(c => {
+        const v = c.val() || {};
+        allMachineHistory.push({
+          id: c.key,
+          machine_id: v.machine_id || v.machineId || v.mesin_id || v.device_id || 'UNKNOWN',
+          user_email: v.user_email || v.email || v.user_id || '-',
+          uid: v.uid || v.user_id || '-',
+          jumlah: v.jumlah || v.botol || 0,
+          saldo_after: v.saldo_after || v.botol_after || 0,
+          timestamp: v.timestamp || v.created_at || 0,
+          source: 'botol_history'
+        });
+      });
+
+      // Fallback 1: /machines/{id}/history
+      if (allMachineHistory.length === 0) {
+        return db.ref('/machines').once('value').then(mSnap => {
+          const promises = [];
+          mSnap.forEach(machineChild => {
+            const machineId = machineChild.key;
+            const p = db.ref(`/machines/${machineId}/history`).limitToLast(200).once('value')
+              .then(hSnap => {
+                hSnap.forEach(h => {
+                  const v = h.val() || {};
+                  allMachineHistory.push({
+                    id: h.key,
+                    machine_id: v.machine_id || machineId,
+                    user_email: v.user_email || v.email || v.user_id || '-',
+                    uid: v.uid || v.user_id || '-',
+                    jumlah: v.jumlah || v.botol || 0,
+                    saldo_after: v.saldo_after || v.botol_after || 0,
+                    timestamp: v.timestamp || v.created_at || 0,
+                    source: 'machines/' + machineId
+                  });
+                });
+              })
+              .catch(() => {});
+            promises.push(p);
+          });
+          return Promise.all(promises);
+        });
+      }
+    })
+    .then(() => {
+      // Fallback 2: /accounts/{uid}/botol_history
+      if (allMachineHistory.length === 0) {
+        return db.ref('/accounts').once('value').then(aSnap => {
+          const promises = [];
+          aSnap.forEach(userChild => {
+            const uid = userChild.key;
+            const uData = userChild.val() || {};
+            const p = db.ref(`/accounts/${uid}/botol_history`).limitToLast(100).once('value')
+              .then(hSnap => {
+                hSnap.forEach(h => {
+                  const v = h.val() || {};
+                  allMachineHistory.push({
+                    id: h.key,
+                    machine_id: v.machine_id || v.machineId || v.mesin_id || 'UNKNOWN',
+                    user_email: v.user_email || uData.email || uid,
+                    uid: uid,
+                    jumlah: v.jumlah || v.botol || 0,
+                    saldo_after: v.saldo_after || uData.botol || 0,
+                    timestamp: v.timestamp || v.created_at || 0,
+                    source: 'accounts/' + uid
+                  });
+                });
+              })
+              .catch(() => {});
+            promises.push(p);
+          });
+          return Promise.all(promises);
+        });
+      }
+    })
+    .then(() => {
+      allMachineHistory.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+      buildMachineSummary();
+      populateMachineDropdown();
+      renderMachineSummaryTable();
+      renderMachineHistory();
+    })
+    .catch(err => {
+      console.warn('[MachineHistory]', err.message);
+      if (el) el.innerHTML = `<tr><td colspan="6" class="empty-state"><i class="fas fa-exclamation-triangle"></i><br>Gagal memuat<small>${escapeHtml(err.message)}</small></td></tr>`;
+      if (summaryEl) summaryEl.innerHTML = `<tr><td colspan="6" class="empty-state"><i class="fas fa-exclamation-triangle"></i><br>Gagal memuat</td></tr>`;
+    });
+}
+
+function buildMachineSummary() {
+  machineSummary = {};
+  allMachineHistory.forEach(h => {
+    const mid = h.machine_id || 'UNKNOWN';
+    if (!machineSummary[mid]) {
+      machineSummary[mid] = {
+        machine_id: mid,
+        total_botol: 0,
+        total_nilai: 0,
+        users: new Set(),
+        last_active: 0,
+        transaksi: 0
+      };
+    }
+    const s = machineSummary[mid];
+    s.total_botol += h.jumlah || 0;
+    s.total_nilai += (h.jumlah || 0) * HARGA_PER_BOTOL;
+    s.users.add(h.user_email || h.uid);
+    s.transaksi += 1;
+    if ((h.timestamp || 0) > s.last_active) s.last_active = h.timestamp;
+  });
+}
+
+function populateMachineDropdown() {
+  const sel = document.getElementById('filter-machine-id');
+  if (!sel) return;
+
+  const current = sel.value;
+  const machines = Object.keys(machineSummary).sort();
+
+  let html = '<option value="">-- Semua Mesin --</option>';
+  machines.forEach(mid => {
+    const s = machineSummary[mid];
+    html += `<option value="${escapeHtml(mid)}">${escapeHtml(mid)} (${s.total_botol} botol)</option>`;
+  });
+  sel.innerHTML = html;
+
+  if (current && machineSummary[current]) {
+    sel.value = current;
+    selectedMachineId = current;
+  }
+}
+
+function resetMachineFilter() {
+  selectedMachineId = '';
+  const sel = document.getElementById('filter-machine-id');
+  if (sel) sel.value = '';
+  const search = document.getElementById('search-machine-user');
+  if (search) search.value = '';
+  renderMachineSummaryTable();
+  renderMachineHistory();
+  showToast('🔄 Filter direset', 'info');
+}
+
+function renderMachineSummaryTable() {
+  const el = document.getElementById('machine-summary-list');
+  const countEl = document.getElementById('mh-summary-count');
+  if (!el) return;
+
+  const machines = Object.values(machineSummary).sort((a, b) => b.total_botol - a.total_botol);
+
+  if (countEl) countEl.innerText = machines.length + ' mesin';
+
+  if (machines.length === 0) {
+    el.innerHTML = '<tr><td colspan="6" class="empty-state"><i class="fas fa-microchip"></i><br>Belum ada history botol dari mesin manapun<small>Log akan muncul saat user input botol via mesin</small></td></tr>';
+    updateMachineStats([]);
+    return;
+  }
+
+  let h = '';
+  machines.forEach(m => {
+    const isActive = selectedMachineId === m.machine_id;
+    h += `<tr class="${isActive ? 'summary-row-active' : ''}">
+      <td><span class="machine-id-badge">${escapeHtml(m.machine_id)}</span></td>
+      <td><strong>${m.total_botol.toLocaleString('id-ID')} botol</strong></td>
+      <td>${formatRupiah(m.total_nilai)}</td>
+      <td><span class="badge info">${m.users.size} user</span></td>
+      <td>${formatDate(m.last_active)}</td>
+      <td>
+        <button class="btn btn-primary" onclick="filterByMachine('${escapeHtml(m.machine_id)}')">
+          <i class="fas fa-filter"></i> Filter
+        </button>
+      </td>
+    </tr>`;
+  });
+  el.innerHTML = h;
+
+  updateMachineStats(machines);
+}
+
+function filterByMachine(machineId) {
+  selectedMachineId = machineId;
+  const sel = document.getElementById('filter-machine-id');
+  if (sel) sel.value = machineId;
+
+  const detailCard = document.getElementById('machine-history-list');
+  if (detailCard) detailCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  renderMachineSummaryTable();
+  renderMachineHistory();
+  showToast(`🔍 Filter: ${machineId}`, 'info');
+}
+
+function renderMachineHistory() {
+  const el = document.getElementById('machine-history-list');
+  const countEl = document.getElementById('mh-detail-count');
+  if (!el) return;
+
+  const sel = document.getElementById('filter-machine-id');
+  const searchEl = document.getElementById('search-machine-user');
+  const machineFilter = sel ? sel.value : '';
+  const searchFilter = searchEl ? searchEl.value.toLowerCase().trim() : '';
+
+  let data = allMachineHistory.slice();
+
+  if (machineFilter) {
+    data = data.filter(h => h.machine_id === machineFilter);
+  }
+  if (searchFilter) {
+    data = data.filter(h =>
+      (h.user_email || '').toLowerCase().includes(searchFilter) ||
+      (h.uid || '').toLowerCase().includes(searchFilter)
+    );
+  }
+
+  if (countEl) countEl.innerText = data.length + ' transaksi';
+
+  if (data.length === 0) {
+    el.innerHTML = '<tr><td colspan="6" class="empty-state"><i class="fas fa-inbox"></i><br>Tidak ada data sesuai filter</td></tr>';
+    updateMachineStatsFromFiltered(data);
+    return;
+  }
+
+  let h = '';
+  data.slice(0, 200).forEach(item => {
+    const saldo = item.saldo_after || 0;
+    h += `<tr>
+      <td>${formatDate(item.timestamp)}</td>
+      <td><span class="machine-id-badge">${escapeHtml(item.machine_id)}</span></td>
+      <td><strong>${escapeHtml(item.user_email || item.uid || '-')}</strong></td>
+      <td><span class="badge success">+${item.jumlah} botol</span></td>
+      <td>${saldo} botol</td>
+      <td>${formatRupiah((item.jumlah || 0) * HARGA_PER_BOTOL)}</td>
+    </tr>`;
+  });
+  el.innerHTML = h;
+
+  updateMachineStatsFromFiltered(data);
+}
+
+function updateMachineStatsFromFiltered(data) {
+  const totalBotol = data.reduce((sum, h) => sum + (h.jumlah || 0), 0);
+  const totalNilai = totalBotol * HARGA_PER_BOTOL;
+  const uniqueUsers = new Set(data.map(h => h.user_email || h.uid)).size;
+  const uniqueMachines = new Set(data.map(h => h.machine_id)).size;
+
+  const totalMachinesEl = document.getElementById('mh-total-machines');
+  const totalBotolEl = document.getElementById('mh-total-botol');
+  const totalNilaiEl = document.getElementById('mh-total-nilai');
+  const totalUsersEl = document.getElementById('mh-total-users');
+
+  if (totalMachinesEl) totalMachinesEl.innerText = uniqueMachines;
+  if (totalBotolEl) totalBotolEl.innerText = totalBotol.toLocaleString('id-ID');
+  if (totalNilaiEl) totalNilaiEl.innerText = formatRupiah(totalNilai);
+  if (totalUsersEl) totalUsersEl.innerText = uniqueUsers;
+}
+
+function updateMachineStats(machines) {
+  const totalBotol = machines.reduce((sum, m) => sum + m.total_botol, 0);
+  const totalNilai = machines.reduce((sum, m) => sum + m.total_nilai, 0);
+  const uniqueUsers = new Set();
+  machines.forEach(m => m.users.forEach(u => uniqueUsers.add(u)));
+
+  const totalMachinesEl = document.getElementById('mh-total-machines');
+  const totalBotolEl = document.getElementById('mh-total-botol');
+  const totalNilaiEl = document.getElementById('mh-total-nilai');
+  const totalUsersEl = document.getElementById('mh-total-users');
+
+  if (totalMachinesEl) totalMachinesEl.innerText = machines.length;
+  if (totalBotolEl) totalBotolEl.innerText = totalBotol.toLocaleString('id-ID');
+  if (totalNilaiEl) totalNilaiEl.innerText = formatRupiah(totalNilai);
+  if (totalUsersEl) totalUsersEl.innerText = uniqueUsers.size;
 }
 
 // ============================================================
@@ -709,7 +1110,6 @@ function loadMachines(){
     console.warn('[Machines]', err.message);
   });
   
-  // Fallback dari root
   db.ref('/').once('value').then(snap=>{
     const data=snap.val()||{};
     const machines=[];
@@ -1076,12 +1476,15 @@ setInterval(()=>{
   }
 },60000);
 
-// Expose ke global
+// ============================================================
+// EXPOSE KE GLOBAL
+// ============================================================
 window.loginAdmin=loginAdmin;
 window.logoutAdmin=logoutAdmin;
 window.showSection=showSection;
 window.loadAll=loadAll;
 window.loadBotolHistory=loadBotolHistory;
+window.loadMachineHistory=loadMachineHistory;
 window.loadUsers=loadUsers;
 window.loadMachines=loadMachines;
 window.loadWithdrawals=loadWithdrawals;
@@ -1090,6 +1493,9 @@ window.loadInvestors=loadInvestors;
 window.loadBroadcasts=loadBroadcasts;
 window.filterBotol=filterBotol;
 window.filterUsers=filterUsers;
+window.filterByMachine=filterByMachine;
+window.resetMachineFilter=resetMachineFilter;
+window.renderMachineHistory=renderMachineHistory;
 window.viewUserDetail=viewUserDetail;
 window.viewMerchantProducts=viewMerchantProducts;
 window.viewMerchantOrders=viewMerchantOrders;
