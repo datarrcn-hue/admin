@@ -99,9 +99,10 @@ tr:hover{background:#FAFBFC}
 
 /* TOAST */
 #toast-container{position:fixed;top:20px;right:20px;z-index:2000;display:flex;flex-direction:column;gap:10px}
-.toast{background:#fff;padding:14px 20px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.15);border-left:4px solid var(--success);font-weight:600;font-size:13px;animation:slideIn .3s ease;min-width:280px}
+.toast{background:#fff;padding:14px 20px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.15);border-left:4px solid var(--success);font-weight:600;font-size:13px;animation:slideIn .3s ease;min-width:280px;max-width:380px}
 .toast.error{border-color:var(--danger)}
 .toast.info{border-color:var(--primary)}
+.toast.warning{border-color:var(--warning)}
 @keyframes slideIn{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
 
 .section{display:none}
@@ -109,6 +110,7 @@ tr:hover{background:#FAFBFC}
 
 .empty-state{text-align:center;padding:40px;color:var(--text2)}
 .empty-state i{font-size:48px;margin-bottom:12px;color:#D1D8E0}
+.empty-state small{display:block;margin-top:8px;font-size:11px;color:#B2BEC3}
 
 /* Mobile */
 @media(max-width:768px){
@@ -129,7 +131,6 @@ tr:hover{background:#FAFBFC}
 </head>
 <body>
 
-<!-- TOAST -->
 <div id="toast-container"></div>
 
 <!-- LOGIN SCREEN -->
@@ -137,8 +138,8 @@ tr:hover{background:#FAFBFC}
   <div class="login-card">
     <h1>🔐 RE-COIN Admin</h1>
     <p>Masukkan email admin untuk melanjutkan</p>
-    <input type="email" id="admin-email" placeholder="admin@recoin.id">
-    <input type="password" id="admin-pass" placeholder="Password">
+    <input type="email" id="admin-email" placeholder="admin@recoin.id" autocomplete="email">
+    <input type="password" id="admin-pass" placeholder="Password" autocomplete="current-password">
     <button onclick="loginAdmin()">MASUK DASHBOARD</button>
     <p style="margin-top:20px;font-size:11px;color:var(--text2)">⚠️ Halaman ini hanya untuk administrator</p>
   </div>
@@ -181,7 +182,7 @@ tr:hover{background:#FAFBFC}
           <div class="icon green"><i class="fas fa-recycle"></i></div>
           <div class="label">Total Botol</div>
           <div class="value" id="ov-total-botol">-</div>
-          <div class="sub" id="ov-botol-hari">Hari ini: -</div>
+          <div class="sub">Semua user</div>
         </div>
         <div class="stat-box">
           <div class="icon gold"><i class="fas fa-coins"></i></div>
@@ -214,7 +215,7 @@ tr:hover{background:#FAFBFC}
         <div class="card-body no-pad">
           <table>
             <thead><tr><th>Waktu</th><th>User</th><th>Aktivitas</th><th>Detail</th></tr></thead>
-            <tbody id="ov-aktivitas"><tr><td colspan="4" class="empty-state">Memuat...</td></tr></tbody>
+            <tbody id="ov-aktivitas"><tr><td colspan="4" class="empty-state"><i class="fas fa-spinner fa-spin"></i><br>Memuat...</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -234,7 +235,7 @@ tr:hover{background:#FAFBFC}
         <div class="card-body no-pad">
           <table>
             <thead><tr><th>Waktu</th><th>User (Email)</th><th>Botol Masuk</th><th>Saldo Sekarang</th><th>Nilai</th></tr></thead>
-            <tbody id="botol-list"><tr><td colspan="5" class="empty-state">Memuat...</td></tr></tbody>
+            <tbody id="botol-list"><tr><td colspan="5" class="empty-state"><i class="fas fa-spinner fa-spin"></i><br>Memuat...</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -254,7 +255,7 @@ tr:hover{background:#FAFBFC}
         <div class="card-body no-pad">
           <table>
             <thead><tr><th>Email</th><th>UID</th><th>Botol</th><th>Saldo</th><th>Terdaftar</th><th>Aksi</th></tr></thead>
-            <tbody id="user-list"><tr><td colspan="6" class="empty-state">Memuat...</td></tr></tbody>
+            <tbody id="user-list"><tr><td colspan="6" class="empty-state"><i class="fas fa-spinner fa-spin"></i><br>Memuat...</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -271,7 +272,7 @@ tr:hover{background:#FAFBFC}
         <div class="card-body no-pad">
           <table>
             <thead><tr><th>Mesin ID</th><th>Status</th><th>User Aktif</th><th>Login Time</th><th>Last Activity</th></tr></thead>
-            <tbody id="machine-list"><tr><td colspan="5" class="empty-state">Memuat...</td></tr></tbody>
+            <tbody id="machine-list"><tr><td colspan="5" class="empty-state"><i class="fas fa-spinner fa-spin"></i><br>Memuat...</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -288,7 +289,7 @@ tr:hover{background:#FAFBFC}
         <div class="card-body no-pad">
           <table>
             <thead><tr><th>Waktu</th><th>User</th><th>Metode</th><th>Detail</th><th>Jumlah</th><th>Status</th><th>Aksi</th></tr></thead>
-            <tbody id="withdrawal-list"><tr><td colspan="7" class="empty-state">Memuat...</td></tr></tbody>
+            <tbody id="withdrawal-list"><tr><td colspan="7" class="empty-state"><i class="fas fa-spinner fa-spin"></i><br>Memuat...</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -305,7 +306,7 @@ tr:hover{background:#FAFBFC}
         <div class="card-body no-pad">
           <table>
             <thead><tr><th>Nama Toko</th><th>Email</th><th>Alamat</th><th>Produk</th><th>Saldo</th><th>Aksi</th></tr></thead>
-            <tbody id="merchant-list"><tr><td colspan="6" class="empty-state">Memuat...</td></tr></tbody>
+            <tbody id="merchant-list"><tr><td colspan="6" class="empty-state"><i class="fas fa-spinner fa-spin"></i><br>Memuat...</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -322,7 +323,7 @@ tr:hover{background:#FAFBFC}
         <div class="card-body no-pad">
           <table>
             <thead><tr><th>Nama</th><th>Email</th><th>Modal</th><th>Saldo</th><th>Penarikan</th><th>Aksi</th></tr></thead>
-            <tbody id="investor-list"><tr><td colspan="6" class="empty-state">Memuat...</td></tr></tbody>
+            <tbody id="investor-list"><tr><td colspan="6" class="empty-state"><i class="fas fa-spinner fa-spin"></i><br>Memuat...</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -331,7 +332,7 @@ tr:hover{background:#FAFBFC}
     <!-- ============ BROADCAST ============ -->
     <section id="section-broadcast" class="section">
       <div class="page-header">
-        <h1>📢 Broadcast ke Email User</h1>
+        <h1>📢 Broadcast ke User</h1>
       </div>
       <div class="card">
         <div class="card-header">
@@ -340,7 +341,7 @@ tr:hover{background:#FAFBFC}
         </div>
         <div class="card-body">
           <div style="background:var(--primary-light);padding:14px;border-radius:12px;margin-bottom:16px;font-size:13px;color:var(--primary-dark)">
-            <i class="fas fa-info-circle"></i> Broadcast ini akan tampil di dalam aplikasi user (bell icon). Untuk kirim ke email, gunakan fitur "Export Email List" di bawah.
+            <i class="fas fa-info-circle"></i> Broadcast ini akan tampil di dalam aplikasi user (bell icon).
           </div>
           <label>Judul Pesan</label>
           <input type="text" id="bc-title" placeholder="Contoh: Promo Spesial Akhir Bulan">
@@ -370,7 +371,7 @@ tr:hover{background:#FAFBFC}
         <div class="card-body no-pad">
           <table>
             <thead><tr><th>Waktu</th><th>Judul</th><th>Prioritas</th><th>Aksi</th></tr></thead>
-            <tbody id="broadcast-history"><tr><td colspan="4" class="empty-state">Memuat...</td></tr></tbody>
+            <tbody id="broadcast-history"><tr><td colspan="4" class="empty-state"><i class="fas fa-spinner fa-spin"></i><br>Memuat...</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -383,11 +384,19 @@ tr:hover{background:#FAFBFC}
         <div class="card-header"><h3>Info Aplikasi</h3></div>
         <div class="card-body">
           <table>
-            <tr><td style="font-weight:600;width:200px">Harga per Botol</td><td id="set-harga">Rp 25</td></tr>
+            <tr><td style="font-weight:600;width:200px">Harga per Botol</td><td>Rp 25</td></tr>
             <tr><td style="font-weight:600">Emisi per Botol</td><td>60 gram CO₂e</td></tr>
             <tr><td style="font-weight:600">Minimal Penarikan</td><td>Rp 5.000</td></tr>
             <tr><td style="font-weight:600">Admin WhatsApp</td><td>6289524538835</td></tr>
           </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>Debug Info</h3></div>
+        <div class="card-body">
+          <p style="font-size:12px;color:var(--text2);margin-bottom:12px">Jika ada error, buka Console browser (F12) atau jalankan debug berikut:</p>
+          <button class="btn btn-primary" onclick="debugCheck()"><i class="fas fa-bug"></i> CEK KONEKSI FIREBASE</button>
+          <pre id="debug-output" style="margin-top:16px;padding:14px;background:#1A1A2E;color:#2ED573;border-radius:12px;font-size:11px;max-height:300px;overflow-y:auto;display:none;white-space:pre-wrap"></pre>
         </div>
       </div>
     </section>
@@ -403,7 +412,7 @@ tr:hover{background:#FAFBFC}
 
 <script>
 // ============================================================
-// KONFIGURASI
+// KONFIGURASI FIREBASE
 // ============================================================
 const firebaseConfig = {
   apiKey: "AIzaSyBG6fx9lrwruglXUbyXym6U3ylD_n9h81w",
@@ -424,7 +433,7 @@ const auth = firebase.auth();
 // ============================================================
 const ADMIN_EMAILS = [
   "tohitmi669@gmail.com",   // Ganti dengan email admin Anda
-  "admin@recoin.id"          // Bisa tambah lebih dari 1 admin
+  "admin@recoin.id"
 ];
 const HARGA_PER_BOTOL = 25;
 
@@ -483,6 +492,8 @@ function loginAdmin(){
       let msg='Login gagal!';
       if(err.code==='auth/user-not-found')msg='Email tidak terdaftar';
       else if(err.code==='auth/wrong-password')msg='Password salah';
+      else if(err.code==='auth/invalid-email')msg='Format email tidak valid';
+      else if(err.code==='auth/too-many-requests')msg='Terlalu banyak percobaan. Coba lagi nanti';
       showToast('❌ '+msg,'error');
     });
 }
@@ -513,7 +524,6 @@ function showSection(name,el){
   document.getElementById('section-'+name).classList.add('active');
   if(el)el.classList.add('active');
   
-  // Lazy load
   if(name==='botol')loadBotolHistory();
   if(name==='users')loadUsers();
   if(name==='mesin')loadMachines();
@@ -524,7 +534,7 @@ function showSection(name,el){
 }
 
 // ============================================================
-// LOAD SEMUA DATA
+// LOAD SEMUA
 // ============================================================
 function loadAll(){
   loadOverview();
@@ -538,14 +548,13 @@ function loadAll(){
 }
 
 // ============================================================
-// 1-4,10. OVERVIEW + USER STATS
+// OVERVIEW
 // ============================================================
 function loadOverview(){
-  // Users
+  // Accounts
   db.ref('/accounts').on('value',snap=>{
     allUsers=[];
     let totalBotol=0;
-    let botolHariIni=0;
     let newToday=0;
     const tStart=todayStart();
     
@@ -554,7 +563,6 @@ function loadOverview(){
       allUsers.push(u);
       totalBotol+=u.botol||0;
       if(u.created_at && u.created_at>=tStart)newToday++;
-      if(u.last_botol_at && u.last_botol_at>=tStart)botolHariIni+=u.botol||0;
     });
     
     document.getElementById('ov-total-users').innerText=allUsers.length;
@@ -563,8 +571,9 @@ function loadOverview(){
     document.getElementById('ov-total-rupiah').innerText=formatRupiah(totalBotol*HARGA_PER_BOTOL);
     
     renderUserTable();
-    renderBotolTable();
     renderAktivitas();
+  }, err=>{
+    console.warn('[Overview/accounts]', err.message);
   });
   
   // Merchants
@@ -573,6 +582,8 @@ function loadOverview(){
     snap.forEach(c=>{allMerchants.push({id:c.key,...c.val()})});
     document.getElementById('ov-merchants').innerText=allMerchants.length;
     renderMerchantTable();
+  }, err=>{
+    console.warn('[Overview/merchants]', err.message);
   });
   
   // Products
@@ -580,20 +591,24 @@ function loadOverview(){
     allProducts=[];
     snap.forEach(c=>{allProducts.push({id:c.key,...c.val()})});
     document.getElementById('ov-products').innerText='Produk: '+allProducts.length;
+  }, err=>{
+    console.warn('[Overview/products]', err.message);
   });
   
-  // Withdrawals pending
+  // Withdrawals count
   db.ref('/withdrawals').on('value',snap=>{
     let pending=0;
     snap.forEach(child=>{
       child.forEach(w=>{if(w.val().status==='pending')pending++});
     });
     document.getElementById('ov-withdrawals').innerText=pending;
+  }, err=>{
+    console.warn('[Overview/withdrawals]', err.message);
   });
 }
 
 // ============================================================
-// 2. HISTORY BOTOL MASUK
+// HISTORY BOTOL (FIXED - tanpa .catch pada .on)
 // ============================================================
 function loadBotolHistory(){
   db.ref('/botol_history').limitToLast(200).on('value',snap=>{
@@ -601,15 +616,11 @@ function loadBotolHistory(){
     snap.forEach(c=>{allBotolLog.push({id:c.key,...c.val()})});
     allBotolLog.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
     renderBotolTable();
-  }).catch(e=>console.log('botol_history error:',e));
-  
-  // Jika belum ada node botol_history, pakai data transaksi sebagai fallback
-  if(allBotolLog.length===0){
-    db.ref('/transactions').limitToLast(50).on('value',snap=>{
-      if(allBotolLog.length>0)return;
-      // Tidak ada history botol, biarkan kosong
-    });
-  }
+  }, err=>{
+    console.warn('[BotolHistory]', err.message);
+    const el=document.getElementById('botol-list');
+    if(el) el.innerHTML='<tr><td colspan="5" class="empty-state"><i class="fas fa-inbox"></i><br>Belum ada history botol masuk<small>Log akan muncul saat user input botol</small></td></tr>';
+  });
 }
 
 function filterBotol(){
@@ -624,13 +635,13 @@ function renderBotolTable(data){
   if(!el)return;
   
   if(list.length===0){
-    el.innerHTML='<tr><td colspan="5" class="empty-state"><i class="fas fa-inbox"></i><br>Belum ada history botol masuk<br><small style="color:#999;font-size:11px">Log akan muncul otomatis saat user input botol</small></td></tr>';
+    el.innerHTML='<tr><td colspan="5" class="empty-state"><i class="fas fa-inbox"></i><br>Belum ada history botol masuk<small>Log akan muncul saat user input botol</small></td></tr>';
     return;
   }
   
   let h='';
   list.slice(0,100).forEach(b=>{
-    const saldoSekarang=b.saldo_after||0;
+    const saldoSekarang=b.saldo_after||b.botol||0;
     h+=`<tr>
       <td>${formatDate(b.timestamp)}</td>
       <td><strong>${escapeHtml(b.user_email||b.email||b.user_id||'-')}</strong></td>
@@ -643,7 +654,7 @@ function renderBotolTable(data){
 }
 
 // ============================================================
-// 3 & 10. DAFTAR USER + SALDO
+// USERS
 // ============================================================
 function loadUsers(){loadOverview()}
 
@@ -681,13 +692,12 @@ function renderUserTable(data){
 function viewUserDetail(uid){
   const u=allUsers.find(x=>x.uid===uid);
   if(!u){showToast('User tidak ditemukan','error');return}
-  
   const saldo=(u.botol||0)*HARGA_PER_BOTOL;
   alert(`📋 DETAIL USER\n\nEmail: ${u.email}\nUID: ${u.uid}\nBotol: ${u.botol||0}\nSaldo: ${formatRupiah(saldo)}\nTerdaftar: ${formatDate(u.created_at)}`);
 }
 
 // ============================================================
-// 5. MONITOR MESIN
+// MESIN
 // ============================================================
 function loadMachines(){
   db.ref('/machines').on('value',snap=>{
@@ -695,9 +705,11 @@ function loadMachines(){
     snap.forEach(c=>{allMachines.push({id:c.key,...c.val()})});
     document.getElementById('ov-machines').innerText=allMachines.length;
     renderMachineTable();
+  }, err=>{
+    console.warn('[Machines]', err.message);
   });
   
-  // Fallback: cek dari root (jika machine ID disimpan langsung di root)
+  // Fallback dari root
   db.ref('/').once('value').then(snap=>{
     const data=snap.val()||{};
     const machines=[];
@@ -711,7 +723,7 @@ function loadMachines(){
       document.getElementById('ov-machines').innerText=machines.length;
       renderMachineTable();
     }
-  });
+  }).catch(e=>console.warn('[Machines root]', e.message));
 }
 
 function renderMachineTable(){
@@ -719,7 +731,7 @@ function renderMachineTable(){
   if(!el)return;
   
   if(allMachines.length===0){
-    el.innerHTML='<tr><td colspan="5" class="empty-state"><i class="fas fa-microchip"></i><br>Belum ada mesin terdaftar<br><small style="color:#999;font-size:11px">Mesin akan muncul saat user login via QR mesin</small></td></tr>';
+    el.innerHTML='<tr><td colspan="5" class="empty-state"><i class="fas fa-microchip"></i><br>Belum ada mesin terdaftar<small>Mesin akan muncul saat user login via QR mesin</small></td></tr>';
     return;
   }
   
@@ -739,7 +751,7 @@ function renderMachineTable(){
 }
 
 // ============================================================
-// 7. MONITOR PENARIKAN USER
+// WITHDRAWALS
 // ============================================================
 function loadWithdrawals(){
   db.ref('/withdrawals').on('value',snap=>{
@@ -752,6 +764,10 @@ function loadWithdrawals(){
     });
     allWithdrawals.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
     renderWithdrawalTable();
+  }, err=>{
+    console.warn('[Withdrawals]', err.message);
+    const el=document.getElementById('withdrawal-list');
+    if(el) el.innerHTML='<tr><td colspan="7" class="empty-state"><i class="fas fa-lock"></i><br>Akses ditolak<small>Error: '+escapeHtml(err.message)+'</small></td></tr>';
   });
 }
 
@@ -771,7 +787,7 @@ function renderWithdrawalTable(){
       <td>${formatDate(w.timestamp)}</td>
       <td><strong>${escapeHtml(w.user_email||w.uid||'-')}</strong></td>
       <td><span class="badge info">${w.method||'-'}</span></td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(w.details||'-')}</td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escapeHtml(w.details||'')}">${escapeHtml(w.details||'-')}</td>
       <td><strong>${formatRupiah(w.amount)}</strong></td>
       <td><span class="badge ${statusBadge}">${w.status||'pending'}</span></td>
       <td>
@@ -793,7 +809,7 @@ function updateWithdrawal(uid,wid,status){
 }
 
 // ============================================================
-// 9. MONITOR MERCHANT
+// MERCHANTS
 // ============================================================
 function loadMerchants(){loadOverview()}
 
@@ -842,17 +858,19 @@ function viewMerchantOrders(mid){
       msg+=`#${o.id.slice(-8)} - ${formatRupiah(o.subtotal||o.total||0)} - ${o.status||'diproses'}\n`;
     });
     alert(msg);
-  });
+  }).catch(e=>alert('Error: '+e.message));
 }
 
 // ============================================================
-// 8. INVESTOR
+// INVESTORS
 // ============================================================
 function loadInvestors(){
   db.ref('/investors').on('value',snap=>{
     allInvestors=[];
     snap.forEach(c=>{allInvestors.push({id:c.key,...c.val()})});
     renderInvestorTable();
+  }, err=>{
+    console.warn('[Investors]', err.message);
   });
 }
 
@@ -861,7 +879,7 @@ function renderInvestorTable(){
   if(!el)return;
   
   if(allInvestors.length===0){
-    el.innerHTML='<tr><td colspan="6" class="empty-state"><i class="fas fa-chart-pie"></i><br>Belum ada investor terdaftar<br><small style="color:#999;font-size:11px">Tambahkan investor di Firebase: /investors/{id}</small></td></tr>';
+    el.innerHTML='<tr><td colspan="6" class="empty-state"><i class="fas fa-chart-pie"></i><br>Belum ada investor terdaftar<small>Tambahkan di Firebase: /investors/{id}</small></td></tr>';
     return;
   }
   
@@ -886,7 +904,7 @@ function viewInvestorDetail(id){
 }
 
 // ============================================================
-// 6. BROADCAST
+// BROADCAST
 // ============================================================
 function loadBroadcasts(){
   db.ref('/broadcasts').limitToLast(20).on('value',snap=>{
@@ -894,6 +912,8 @@ function loadBroadcasts(){
     snap.forEach(c=>{allBroadcasts.push({id:c.key,...c.val()})});
     allBroadcasts.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
     renderBroadcastHistory();
+  }, err=>{
+    console.warn('[Broadcasts]', err.message);
   });
 }
 
@@ -917,12 +937,12 @@ function sendBroadcast(){
     priority:priority,
     target:'all',
     timestamp:Date.now(),
-    sender:'admin'
+    sender: auth.currentUser.email
   };
   
   db.ref('/broadcasts/'+bid).set(broadcast)
     .then(()=>{
-      showToast('✅ Broadcast berhasil dikirim ke semua user!','success');
+      showToast('✅ Broadcast berhasil dikirim!','success');
       document.getElementById('bc-title').value='';
       document.getElementById('bc-message').value='';
     })
@@ -969,22 +989,20 @@ function exportEmails(){
   const emails=allUsers.map(u=>u.email).filter(e=>e).join(', ');
   document.getElementById('email-list-export').value=emails;
   
-  // Auto copy
   navigator.clipboard.writeText(emails).then(()=>{
-    showToast('✅ '+allUsers.length+' email berhasil di-copy ke clipboard!','success');
+    showToast('✅ '+allUsers.length+' email berhasil di-copy!','success');
   }).catch(()=>{
     showToast('📋 Email dimuat. Silakan copy manual.','info');
   });
 }
 
 // ============================================================
-// AKTIVITAS TERBARU
+// AKTIVITAS
 // ============================================================
 function renderAktivitas(){
   const el=document.getElementById('ov-aktivitas');
   if(!el)return;
   
-  // Gabungkan user + withdrawal terbaru
   const activities=[];
   
   allUsers.slice(0,5).forEach(u=>{
@@ -1020,13 +1038,67 @@ function renderAktivitas(){
 }
 
 // ============================================================
-// AUTO REFRESH SETIAP 60 DETIK
+// DEBUG
 // ============================================================
+async function debugCheck(){
+  const out=document.getElementById('debug-output');
+  out.style.display='block';
+  out.textContent='⏳ Memeriksa koneksi...\n\n';
+  
+  const lines=[];
+  lines.push('=== DEBUG CHECK ===');
+  lines.push('Email Admin    : '+(auth.currentUser?.email||'-'));
+  lines.push('UID Admin      : '+(auth.currentUser?.uid||'-'));
+  lines.push('Database URL   : '+firebaseConfig.databaseURL);
+  lines.push('');
+  
+  const nodes=['/accounts','/withdrawals','/botol_history','/transactions','/merchants','/products','/broadcasts','/investors','/machines','/admin_config'];
+  
+  for(const node of nodes){
+    try{
+      const snap=await db.ref(node).once('value');
+      const count=snap.exists()?snap.numChildren():0;
+      lines.push(`✅ ${node.padEnd(20)} : ${count} child`);
+    }catch(e){
+      lines.push(`❌ ${node.padEnd(20)} : ${e.message}`);
+    }
+  }
+  
+  lines.push('');
+  lines.push('=== SELESAI ===');
+  out.textContent=lines.join('\n');
+}
+
+// Auto refresh 60 detik
 setInterval(()=>{
   if(auth.currentUser && ADMIN_EMAILS.includes(auth.currentUser.email)){
     loadOverview();
   }
 },60000);
+
+// Expose ke global
+window.loginAdmin=loginAdmin;
+window.logoutAdmin=logoutAdmin;
+window.showSection=showSection;
+window.loadAll=loadAll;
+window.loadBotolHistory=loadBotolHistory;
+window.loadUsers=loadUsers;
+window.loadMachines=loadMachines;
+window.loadWithdrawals=loadWithdrawals;
+window.loadMerchants=loadMerchants;
+window.loadInvestors=loadInvestors;
+window.loadBroadcasts=loadBroadcasts;
+window.filterBotol=filterBotol;
+window.filterUsers=filterUsers;
+window.viewUserDetail=viewUserDetail;
+window.viewMerchantProducts=viewMerchantProducts;
+window.viewMerchantOrders=viewMerchantOrders;
+window.viewInvestorDetail=viewInvestorDetail;
+window.updateWithdrawal=updateWithdrawal;
+window.sendBroadcast=sendBroadcast;
+window.deleteBroadcast=deleteBroadcast;
+window.exportEmails=exportEmails;
+window.debugCheck=debugCheck;
 </script>
 </body>
-</html>1
+</html>
