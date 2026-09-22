@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard - RE-COIN</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter','Segoe UI',sans-serif}
+:root{--primary:#118EEA;--primary-dark:#0E7ACC;--primary-light:#E8F4FD;--gold:#FFB800;--danger:#FF4757;--success:#2ED573;--warning:#F59E0B;--gray:#A4B0BE;--gray-light:#F1F2F6;--bg:#F5F7FA;--card:#fff;--text:#1A1A2E;--text2:#747D8C;--border:#EAECF0}
+body{background:var(--bg);min-height:100vh;color:var(--text);font-size:14px}
+.hidden{display:none!important}
+
+/* LOGIN */
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#118EEA,#1B9CFC)}
+.login-card{background:#fff;padding:40px;border-radius:24px;box-shadow:0 20px 60px rgba(0,0,0,.2);width:100%;max-width:400px;text-align:center}
+.login-card h1{font-size:28px;font-weight:800;color:var(--primary);margin-bottom:8px}
+.login-card p{color:var(--text2);margin-bottom:24px;font-size:13px}
+.login-card input{width:100%;padding:16px;margin-bottom:12px;border:1.5px solid var(--border);border-radius:14px;font-size:15px;outline:none;background:#FAFBFC}
+.login-card input:focus{border-color:var(--primary);background:#fff}
+.login-card button{width:100%;padding:16px;background:linear-gradient(135deg,#118EEA,#1B9CFC);color:#fff;border:none;border-radius:14px;font-weight:700;font-size:15px;cursor:pointer;margin-top:8px}
+.login-card button:hover{opacity:.9}
+
+/* LAYOUT */
+#dashboard{display:none;min-height:100vh}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:260px;background:#fff;border-right:1px solid var(--border);padding:20px;overflow-y:auto;z-index:100}
+.sidebar h2{font-size:20px;font-weight:800;color:var(--primary);margin-bottom:24px;display:flex;align-items:center;gap:8px}
+.sidebar nav a{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;color:var(--text2);text-decoration:none;font-weight:600;font-size:14px;margin-bottom:4px;cursor:pointer;transition:.2s}
+.sidebar nav a:hover{background:var(--gray-light);color:var(--text)}
+.sidebar nav a.active{background:var(--primary-light);color:var(--primary)}
+.sidebar nav a i{width:20px;text-align:center}
+.sidebar .logout-btn{margin-top:20px;padding:12px;background:#FEE2E2;color:#991B1B;border:none;border-radius:12px;width:100%;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+
+.main{margin-left:260px;padding:24px;min-height:100vh}
+.page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.page-header h1{font-size:24px;font-weight:800}
+.page-header .refresh-btn{padding:10px 16px;background:var(--primary);color:#fff;border:none;border-radius:12px;cursor:pointer;font-weight:600;font-size:13px;display:flex;align-items:center;gap:6px}
+
+/* CARDS */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px}
+.stat-box{background:#fff;padding:20px;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.04);border:1px solid var(--border);position:relative;overflow:hidden}
+.stat-box::before{content:'';position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;background:var(--primary-light);opacity:.5}
+.stat-box .icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;margin-bottom:12px;position:relative;z-index:2}
+.stat-box .label{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.stat-box .value{font-size:24px;font-weight:800;color:var(--text);position:relative;z-index:2}
+.stat-box .sub{font-size:11px;color:var(--text2);margin-top:4px}
+.icon.blue{background:linear-gradient(135deg,#118EEA,#1B9CFC)}
+.icon.gold{background:linear-gradient(135deg,#FFB800,#FFA502)}
+.icon.green{background:linear-gradient(135deg,#2ED573,#27AE60)}
+.icon.purple{background:linear-gradient(135deg,#6C5CE7,#A363D9)}
+.icon.red{background:linear-gradient(135deg,#FF4757,#C0392B)}
+
+/* TABLES */
+.card{background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.04);border:1px solid var(--border);margin-bottom:20px;overflow:hidden}
+.card-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.card-header h3{font-size:16px;font-weight:700}
+.card-body{padding:20px}
+.card-body.no-pad{padding:0}
+
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead{background:var(--gray-light)}
+th{padding:12px 16px;text-align:left;font-weight:700;color:var(--text2);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+td{padding:12px 16px;border-bottom:1px solid var(--border)}
+tr:last-child td{border-bottom:none}
+tr:hover{background:#FAFBFC}
+
+.badge{padding:4px 10px;border-radius:12px;font-size:11px;font-weight:700;display:inline-block}
+.badge.success{background:#D1FAE5;color:#065F46}
+.badge.warning{background:#FEF3C7;color:#92400E}
+.badge.danger{background:#FEE2E2;color:#991B1B}
+.badge.info{background:#DBEAFE;color:#1E40AF}
+.badge.gray{background:var(--gray-light);color:var(--text2)}
+.badge.online{background:#D1FAE5;color:#065F46}
+.badge.offline{background:#FEE2E2;color:#991B1B}
+
+.btn{padding:8px 14px;border-radius:10px;border:none;font-weight:600;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-success{background:var(--success);color:#fff}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-secondary{background:var(--gray-light);color:var(--text)}
+
+.search-bar{width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;background:#FAFBFC}
+.search-bar:focus{border-color:var(--primary);background:#fff}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px}
+.modal-overlay.active{display:flex}
+.modal{background:#fff;border-radius:20px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;padding:28px;position:relative}
+.modal h3{font-size:18px;font-weight:800;margin-bottom:16px}
+.modal .close{position:absolute;top:16px;right:20px;font-size:24px;cursor:pointer;color:var(--text2);border:none;background:none;padding:0;width:auto}
+.modal label{display:block;font-weight:600;font-size:12px;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.modal input,.modal textarea,.modal select{width:100%;padding:14px;margin-bottom:14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;background:#FAFBFC;font-family:inherit}
+.modal input:focus,.modal textarea:focus,.modal select:focus{border-color:var(--primary);background:#fff}
+.modal textarea{min-height:120px;resize:vertical}
+.modal .btn-full{width:100%;padding:14px;font-size:14px;border-radius:12px;font-weight:700;cursor:pointer;border:none;margin-top:8px}
+.modal .btn-full.primary{background:linear-gradient(135deg,#118EEA,#1B9CFC);color:#fff}
+.modal .btn-full.danger{background:var(--danger);color:#fff}
+
+/* TOAST */
+#toast-container{position:fixed;top:20px;right:20px;z-index:2000;display:flex;flex-direction:column;gap:10px}
+.toast{background:#fff;padding:14px 20px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.15);border-left:4px solid var(--success);font-weight:600;font-size:13px;animation:slideIn .3s ease;min-width:280px}
+.toast.error{border-color:var(--danger)}
+.toast.info{border-color:var(--primary)}
+@keyframes slideIn{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+.section{display:none}
+.section.active{display:block}
+
+.empty-state{text-align:center;padding:40px;color:var(--text2)}
+.empty-state i{font-size:48px;margin-bottom:12px;color:#D1D8E0}
+
+/* Mobile */
+@media(max-width:768px){
+  .sidebar{width:100%;position:fixed;bottom:0;top:auto;left:0;right:0;height:auto;padding:8px;display:flex;overflow-x:auto;border-right:none;border-top:1px solid var(--border);z-index:200}
+  .sidebar h2{display:none}
+  .sidebar nav{display:flex;width:100%}
+  .sidebar nav a{flex-direction:column;font-size:10px;padding:8px 6px;min-width:70px;text-align:center;gap:4px;margin:0}
+  .sidebar nav a i{font-size:18px}
+  .sidebar .logout-btn{margin-left:auto;width:auto;padding:8px 12px;font-size:11px}
+  .main{margin-left:0;padding:16px;padding-bottom:90px}
+  .stats-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .stat-box{padding:14px}
+  .stat-box .value{font-size:18px}
+  th,td{padding:8px 10px;font-size:12px}
+  .modal{padding:20px;margin:0 12px}
+}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div id="toast-container"></div>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="login-card">
+    <h1>🔐 RE-COIN Admin</h1>
+    <p>Masukkan email admin untuk melanjutkan</p>
+    <input type="email" id="admin-email" placeholder="admin@recoin.id">
+    <input type="password" id="admin-pass" placeholder="Password">
+    <button onclick="loginAdmin()">MASUK DASHBOARD</button>
+    <p style="margin-top:20px;font-size:11px;color:var(--text2)">⚠️ Halaman ini hanya untuk administrator</p>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <aside class="sidebar">
+    <h2><i class="fas fa-recycle"></i> RE-COIN Admin</h2>
+    <nav>
+      <a class="active" onclick="showSection('overview',this)"><i class="fas fa-chart-line"></i> Overview</a>
+      <a onclick="showSection('botol',this)"><i class="fas fa-history"></i> History Botol</a>
+      <a onclick="showSection('users',this)"><i class="fas fa-users"></i> Daftar User</a>
+      <a onclick="showSection('mesin',this)"><i class="fas fa-microchip"></i> Monitor Mesin</a>
+      <a onclick="showSection('withdrawals',this)"><i class="fas fa-money-bill-wave"></i> Penarikan</a>
+      <a onclick="showSection('merchants',this)"><i class="fas fa-store"></i> Merchant</a>
+      <a onclick="showSection('investors',this)"><i class="fas fa-chart-pie"></i> Investor</a>
+      <a onclick="showSection('broadcast',this)"><i class="fas fa-bullhorn"></i> Broadcast</a>
+      <a onclick="showSection('pengaturan',this)"><i class="fas fa-cog"></i> Pengaturan</a>
+    </nav>
+    <button class="logout-btn" onclick="logoutAdmin()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+  </aside>
+
+  <main class="main">
+    <!-- ============ OVERVIEW ============ -->
+    <section id="section-overview" class="section active">
+      <div class="page-header">
+        <h1>📊 Overview Dashboard</h1>
+        <button class="refresh-btn" onclick="loadAll()"><i class="fas fa-sync-alt"></i> Refresh Semua</button>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="icon blue"><i class="fas fa-users"></i></div>
+          <div class="label">Total User</div>
+          <div class="value" id="ov-total-users">-</div>
+          <div class="sub" id="ov-new-today">Hari ini: -</div>
+        </div>
+        <div class="stat-box">
+          <div class="icon green"><i class="fas fa-recycle"></i></div>
+          <div class="label">Total Botol</div>
+          <div class="value" id="ov-total-botol">-</div>
+          <div class="sub" id="ov-botol-hari">Hari ini: -</div>
+        </div>
+        <div class="stat-box">
+          <div class="icon gold"><i class="fas fa-coins"></i></div>
+          <div class="label">Nilai Konversi</div>
+          <div class="value" id="ov-total-rupiah">Rp 0</div>
+          <div class="sub">Total saldo user</div>
+        </div>
+        <div class="stat-box">
+          <div class="icon purple"><i class="fas fa-store"></i></div>
+          <div class="label">Merchant Aktif</div>
+          <div class="value" id="ov-merchants">-</div>
+          <div class="sub" id="ov-products">Produk: -</div>
+        </div>
+        <div class="stat-box">
+          <div class="icon red"><i class="fas fa-money-bill-wave"></i></div>
+          <div class="label">Penarikan Pending</div>
+          <div class="value" id="ov-withdrawals">-</div>
+          <div class="sub">Menunggu diproses</div>
+        </div>
+        <div class="stat-box">
+          <div class="icon blue"><i class="fas fa-microchip"></i></div>
+          <div class="label">Mesin Online</div>
+          <div class="value" id="ov-machines">-</div>
+          <div class="sub">Total mesin terdaftar</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3><i class="fas fa-fire"></i> Aktivitas Terbaru</h3></div>
+        <div class="card-body no-pad">
+          <table>
+            <thead><tr><th>Waktu</th><th>User</th><th>Aktivitas</th><th>Detail</th></tr></thead>
+            <tbody id="ov-aktivitas"><tr><td colspan="4" class="empty-state">Memuat...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ HISTORY BOTOL ============ -->
+    <section id="section-botol" class="section">
+      <div class="page-header">
+        <h1>♻️ History Botol Masuk</h1>
+        <button class="refresh-btn" onclick="loadBotolHistory()"><i class="fas fa-sync-alt"></i> Refresh</button>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Log Botol Masuk</h3>
+          <input type="text" class="search-bar" style="max-width:280px" id="search-botol" placeholder="🔍 Cari email user..." oninput="filterBotol()">
+        </div>
+        <div class="card-body no-pad">
+          <table>
+            <thead><tr><th>Waktu</th><th>User (Email)</th><th>Botol Masuk</th><th>Saldo Sekarang</th><th>Nilai</th></tr></thead>
+            <tbody id="botol-list"><tr><td colspan="5" class="empty-state">Memuat...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ USERS ============ -->
+    <section id="section-users" class="section">
+      <div class="page-header">
+        <h1>👥 Daftar User</h1>
+        <button class="refresh-btn" onclick="loadUsers()"><i class="fas fa-sync-alt"></i> Refresh</button>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Semua User Terdaftar</h3>
+          <input type="text" class="search-bar" style="max-width:280px" id="search-user" placeholder="🔍 Cari email..." oninput="filterUsers()">
+        </div>
+        <div class="card-body no-pad">
+          <table>
+            <thead><tr><th>Email</th><th>UID</th><th>Botol</th><th>Saldo</th><th>Terdaftar</th><th>Aksi</th></tr></thead>
+            <tbody id="user-list"><tr><td colspan="6" class="empty-state">Memuat...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ MESIN ============ -->
+    <section id="section-mesin" class="section">
+      <div class="page-header">
+        <h1>🔌 Monitor Mesin</h1>
+        <button class="refresh-btn" onclick="loadMachines()"><i class="fas fa-sync-alt"></i> Refresh</button>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>Status Mesin</h3></div>
+        <div class="card-body no-pad">
+          <table>
+            <thead><tr><th>Mesin ID</th><th>Status</th><th>User Aktif</th><th>Login Time</th><th>Last Activity</th></tr></thead>
+            <tbody id="machine-list"><tr><td colspan="5" class="empty-state">Memuat...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ WITHDRAWALS ============ -->
+    <section id="section-withdrawals" class="section">
+      <div class="page-header">
+        <h1>💰 Monitor Penarikan Saldo</h1>
+        <button class="refresh-btn" onclick="loadWithdrawals()"><i class="fas fa-sync-alt"></i> Refresh</button>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>Permintaan Penarikan User</h3></div>
+        <div class="card-body no-pad">
+          <table>
+            <thead><tr><th>Waktu</th><th>User</th><th>Metode</th><th>Detail</th><th>Jumlah</th><th>Status</th><th>Aksi</th></tr></thead>
+            <tbody id="withdrawal-list"><tr><td colspan="7" class="empty-state">Memuat...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ MERCHANTS ============ -->
+    <section id="section-merchants" class="section">
+      <div class="page-header">
+        <h1>🏪 Monitor Merchant</h1>
+        <button class="refresh-btn" onclick="loadMerchants()"><i class="fas fa-sync-alt"></i> Refresh</button>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>Daftar Merchant</h3></div>
+        <div class="card-body no-pad">
+          <table>
+            <thead><tr><th>Nama Toko</th><th>Email</th><th>Alamat</th><th>Produk</th><th>Saldo</th><th>Aksi</th></tr></thead>
+            <tbody id="merchant-list"><tr><td colspan="6" class="empty-state">Memuat...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ INVESTORS ============ -->
+    <section id="section-investors" class="section">
+      <div class="page-header">
+        <h1>📈 Investor</h1>
+        <button class="refresh-btn" onclick="loadInvestors()"><i class="fas fa-sync-alt"></i> Refresh</button>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>Daftar Investor & Penarikan</h3></div>
+        <div class="card-body no-pad">
+          <table>
+            <thead><tr><th>Nama</th><th>Email</th><th>Modal</th><th>Saldo</th><th>Penarikan</th><th>Aksi</th></tr></thead>
+            <tbody id="investor-list"><tr><td colspan="6" class="empty-state">Memuat...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ BROADCAST ============ -->
+    <section id="section-broadcast" class="section">
+      <div class="page-header">
+        <h1>📢 Broadcast ke Email User</h1>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Kirim Pesan ke User</h3>
+          <span class="badge info" id="broadcast-target">Target: Semua User</span>
+        </div>
+        <div class="card-body">
+          <div style="background:var(--primary-light);padding:14px;border-radius:12px;margin-bottom:16px;font-size:13px;color:var(--primary-dark)">
+            <i class="fas fa-info-circle"></i> Broadcast ini akan tampil di dalam aplikasi user (bell icon). Untuk kirim ke email, gunakan fitur "Export Email List" di bawah.
+          </div>
+          <label>Judul Pesan</label>
+          <input type="text" id="bc-title" placeholder="Contoh: Promo Spesial Akhir Bulan">
+          <label>Prioritas</label>
+          <select id="bc-priority">
+            <option value="low">🔵 Umum</option>
+            <option value="medium">🟡 Info</option>
+            <option value="high">🔴 Penting</option>
+          </select>
+          <label>Isi Pesan</label>
+          <textarea id="bc-message" placeholder="Tulis pesan untuk user..."></textarea>
+          <button class="btn-full primary" onclick="sendBroadcast()"><i class="fas fa-paper-plane"></i> KIRIM BROADCAST</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>📧 Export Email User</h3></div>
+        <div class="card-body">
+          <p style="margin-bottom:12px;font-size:13px;color:var(--text2)">Salin semua email user untuk broadcast manual (BCC):</p>
+          <textarea id="email-list-export" readonly style="width:100%;min-height:120px;padding:12px;border:1.5px solid var(--border);border-radius:12px;font-family:monospace;font-size:12px;background:#FAFBFC" placeholder="Klik tombol di bawah untuk memuat..."></textarea>
+          <button class="btn btn-primary" onclick="exportEmails()" style="margin-top:12px"><i class="fas fa-copy"></i> MUAT & COPY EMAIL</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>📜 Broadcast Terakhir</h3></div>
+        <div class="card-body no-pad">
+          <table>
+            <thead><tr><th>Waktu</th><th>Judul</th><th>Prioritas</th><th>Aksi</th></tr></thead>
+            <tbody id="broadcast-history"><tr><td colspan="4" class="empty-state">Memuat...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PENGATURAN ============ -->
+    <section id="section-pengaturan" class="section">
+      <div class="page-header"><h1>⚙️ Pengaturan</h1></div>
+      <div class="card">
+        <div class="card-header"><h3>Info Aplikasi</h3></div>
+        <div class="card-body">
+          <table>
+            <tr><td style="font-weight:600;width:200px">Harga per Botol</td><td id="set-harga">Rp 25</td></tr>
+            <tr><td style="font-weight:600">Emisi per Botol</td><td>60 gram CO₂e</td></tr>
+            <tr><td style="font-weight:600">Minimal Penarikan</td><td>Rp 5.000</td></tr>
+            <tr><td style="font-weight:600">Admin WhatsApp</td><td>6289524538835</td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ============================================================
+     FIREBASE COMPAT SDK
+     ============================================================ -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
+<script>
+// ============================================================
+// KONFIGURASI
+// ============================================================
+const firebaseConfig = {
+  apiKey: "AIzaSyBG6fx9lrwruglXUbyXym6U3ylD_n9h81w",
+  authDomain: "recoinv2.firebaseapp.com",
+  databaseURL: "https://recoinv2-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "recoinv2",
+  storageBucket: "recoinv2.firebasestorage.app",
+  messagingSenderId: "1085929489463",
+  appId: "1:1085929489463:web:d0ef4e4a75c9aa0e12abb2"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const auth = firebase.auth();
+
+// ============================================================
+// KONFIGURASI ADMIN - GANTI EMAIL ADMIN DI SINI!
+// ============================================================
+const ADMIN_EMAILS = [
+  "tohitmi669@gmail.com",   // Ganti dengan email admin Anda
+  "admin@recoin.id"          // Bisa tambah lebih dari 1 admin
+];
+const HARGA_PER_BOTOL = 25;
+
+// State
+let allUsers = [];
+let allBotolLog = [];
+let allWithdrawals = [];
+let allMerchants = [];
+let allProducts = [];
+let allMachines = [];
+let allInvestors = [];
+let allBroadcasts = [];
+let allTransactions = [];
+
+// ============================================================
+// UTILITY
+// ============================================================
+function formatRupiah(n){return 'Rp '+(n||0).toLocaleString('id-ID')}
+function formatDate(t){if(!t)return '-';try{return new Date(t).toLocaleString('id-ID',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}catch(e){return '-'}}
+function formatDateShort(t){if(!t)return '-';try{return new Date(t).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'})}catch(e){return '-'}}
+function escapeHtml(s){if(!s)return'';return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m])}
+function todayStart(){const d=new Date();d.setHours(0,0,0,0);return d.getTime()}
+
+function showToast(msg,type='success'){
+  const c=document.getElementById('toast-container');
+  const t=document.createElement('div');
+  t.className='toast '+type;
+  t.innerHTML=msg;
+  c.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),300)},3000);
+}
+
+// ============================================================
+// LOGIN ADMIN
+// ============================================================
+function loginAdmin(){
+  const email=document.getElementById('admin-email').value.trim();
+  const pass=document.getElementById('admin-pass').value;
+  if(!email||!pass){showToast('⚠️ Email dan password wajib diisi','error');return}
+  
+  auth.signInWithEmailAndPassword(email,pass)
+    .then(userCred=>{
+      const user=userCred.user;
+      if(!ADMIN_EMAILS.includes(user.email)){
+        showToast('❌ Akses ditolak! Bukan admin.','error');
+        auth.signOut();
+        return;
+      }
+      showToast('✅ Selamat datang, Admin!','success');
+      document.getElementById('login-screen').style.display='none';
+      document.getElementById('dashboard').style.display='block';
+      loadAll();
+    })
+    .catch(err=>{
+      console.error(err);
+      let msg='Login gagal!';
+      if(err.code==='auth/user-not-found')msg='Email tidak terdaftar';
+      else if(err.code==='auth/wrong-password')msg='Password salah';
+      showToast('❌ '+msg,'error');
+    });
+}
+
+function logoutAdmin(){
+  if(!confirm('Yakin ingin logout?'))return;
+  auth.signOut().then(()=>{
+    document.getElementById('login-screen').style.display='flex';
+    document.getElementById('dashboard').style.display='none';
+  });
+}
+
+// Auto login cek
+auth.onAuthStateChanged(user=>{
+  if(user && ADMIN_EMAILS.includes(user.email)){
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('dashboard').style.display='block';
+    loadAll();
+  }
+});
+
+// ============================================================
+// NAVIGASI
+// ============================================================
+function showSection(name,el){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.sidebar nav a').forEach(a=>a.classList.remove('active'));
+  document.getElementById('section-'+name).classList.add('active');
+  if(el)el.classList.add('active');
+  
+  // Lazy load
+  if(name==='botol')loadBotolHistory();
+  if(name==='users')loadUsers();
+  if(name==='mesin')loadMachines();
+  if(name==='withdrawals')loadWithdrawals();
+  if(name==='merchants')loadMerchants();
+  if(name==='investors')loadInvestors();
+  if(name==='broadcast')loadBroadcasts();
+}
+
+// ============================================================
+// LOAD SEMUA DATA
+// ============================================================
+function loadAll(){
+  loadOverview();
+  loadBotolHistory();
+  loadUsers();
+  loadMachines();
+  loadWithdrawals();
+  loadMerchants();
+  loadInvestors();
+  loadBroadcasts();
+}
+
+// ============================================================
+// 1-4,10. OVERVIEW + USER STATS
+// ============================================================
+function loadOverview(){
+  // Users
+  db.ref('/accounts').on('value',snap=>{
+    allUsers=[];
+    let totalBotol=0;
+    let botolHariIni=0;
+    let newToday=0;
+    const tStart=todayStart();
+    
+    snap.forEach(child=>{
+      const u={uid:child.key,...child.val()};
+      allUsers.push(u);
+      totalBotol+=u.botol||0;
+      if(u.created_at && u.created_at>=tStart)newToday++;
+      if(u.last_botol_at && u.last_botol_at>=tStart)botolHariIni+=u.botol||0;
+    });
+    
+    document.getElementById('ov-total-users').innerText=allUsers.length;
+    document.getElementById('ov-new-today').innerText='Hari ini: '+newToday;
+    document.getElementById('ov-total-botol').innerText=totalBotol.toLocaleString('id-ID');
+    document.getElementById('ov-total-rupiah').innerText=formatRupiah(totalBotol*HARGA_PER_BOTOL);
+    
+    renderUserTable();
+    renderBotolTable();
+    renderAktivitas();
+  });
+  
+  // Merchants
+  db.ref('/merchants').on('value',snap=>{
+    allMerchants=[];
+    snap.forEach(c=>{allMerchants.push({id:c.key,...c.val()})});
+    document.getElementById('ov-merchants').innerText=allMerchants.length;
+    renderMerchantTable();
+  });
+  
+  // Products
+  db.ref('/products').on('value',snap=>{
+    allProducts=[];
+    snap.forEach(c=>{allProducts.push({id:c.key,...c.val()})});
+    document.getElementById('ov-products').innerText='Produk: '+allProducts.length;
+  });
+  
+  // Withdrawals pending
+  db.ref('/withdrawals').on('value',snap=>{
+    let pending=0;
+    snap.forEach(child=>{
+      child.forEach(w=>{if(w.val().status==='pending')pending++});
+    });
+    document.getElementById('ov-withdrawals').innerText=pending;
+  });
+}
+
+// ============================================================
+// 2. HISTORY BOTOL MASUK
+// ============================================================
+function loadBotolHistory(){
+  db.ref('/botol_history').limitToLast(200).on('value',snap=>{
+    allBotolLog=[];
+    snap.forEach(c=>{allBotolLog.push({id:c.key,...c.val()})});
+    allBotolLog.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+    renderBotolTable();
+  }).catch(e=>console.log('botol_history error:',e));
+  
+  // Jika belum ada node botol_history, pakai data transaksi sebagai fallback
+  if(allBotolLog.length===0){
+    db.ref('/transactions').limitToLast(50).on('value',snap=>{
+      if(allBotolLog.length>0)return;
+      // Tidak ada history botol, biarkan kosong
+    });
+  }
+}
+
+function filterBotol(){
+  const q=document.getElementById('search-botol').value.toLowerCase();
+  const filtered=allBotolLog.filter(b=>(b.user_email||b.email||'').toLowerCase().includes(q));
+  renderBotolTable(filtered);
+}
+
+function renderBotolTable(data){
+  const list=data||allBotolLog;
+  const el=document.getElementById('botol-list');
+  if(!el)return;
+  
+  if(list.length===0){
+    el.innerHTML='<tr><td colspan="5" class="empty-state"><i class="fas fa-inbox"></i><br>Belum ada history botol masuk<br><small style="color:#999;font-size:11px">Log akan muncul otomatis saat user input botol</small></td></tr>';
+    return;
+  }
+  
+  let h='';
+  list.slice(0,100).forEach(b=>{
+    const saldoSekarang=b.saldo_after||0;
+    h+=`<tr>
+      <td>${formatDate(b.timestamp)}</td>
+      <td><strong>${escapeHtml(b.user_email||b.email||b.user_id||'-')}</strong></td>
+      <td><span class="badge success">+${b.jumlah||b.botol||0} botol</span></td>
+      <td>${saldoSekarang} botol</td>
+      <td>${formatRupiah(saldoSekarang*HARGA_PER_BOTOL)}</td>
+    </tr>`;
+  });
+  el.innerHTML=h;
+}
+
+// ============================================================
+// 3 & 10. DAFTAR USER + SALDO
+// ============================================================
+function loadUsers(){loadOverview()}
+
+function filterUsers(){
+  const q=document.getElementById('search-user').value.toLowerCase();
+  const filtered=allUsers.filter(u=>(u.email||'').toLowerCase().includes(q));
+  renderUserTable(filtered);
+}
+
+function renderUserTable(data){
+  const list=data||allUsers;
+  const el=document.getElementById('user-list');
+  if(!el)return;
+  
+  if(list.length===0){
+    el.innerHTML='<tr><td colspan="6" class="empty-state"><i class="fas fa-users"></i><br>Belum ada user terdaftar</td></tr>';
+    return;
+  }
+  
+  let h='';
+  list.forEach(u=>{
+    const saldo=(u.botol||0)*HARGA_PER_BOTOL;
+    h+=`<tr>
+      <td><strong>${escapeHtml(u.email||'-')}</strong></td>
+      <td style="font-family:monospace;font-size:11px;color:var(--text2)">${(u.uid||'').substring(0,16)}...</td>
+      <td><span class="badge info">${u.botol||0} botol</span></td>
+      <td><strong>${formatRupiah(saldo)}</strong></td>
+      <td>${formatDateShort(u.created_at)}</td>
+      <td><button class="btn btn-secondary" onclick="viewUserDetail('${u.uid}')"><i class="fas fa-eye"></i> Detail</button></td>
+    </tr>`;
+  });
+  el.innerHTML=h;
+}
+
+function viewUserDetail(uid){
+  const u=allUsers.find(x=>x.uid===uid);
+  if(!u){showToast('User tidak ditemukan','error');return}
+  
+  const saldo=(u.botol||0)*HARGA_PER_BOTOL;
+  alert(`📋 DETAIL USER\n\nEmail: ${u.email}\nUID: ${u.uid}\nBotol: ${u.botol||0}\nSaldo: ${formatRupiah(saldo)}\nTerdaftar: ${formatDate(u.created_at)}`);
+}
+
+// ============================================================
+// 5. MONITOR MESIN
+// ============================================================
+function loadMachines(){
+  db.ref('/machines').on('value',snap=>{
+    allMachines=[];
+    snap.forEach(c=>{allMachines.push({id:c.key,...c.val()})});
+    document.getElementById('ov-machines').innerText=allMachines.length;
+    renderMachineTable();
+  });
+  
+  // Fallback: cek dari root (jika machine ID disimpan langsung di root)
+  db.ref('/').once('value').then(snap=>{
+    const data=snap.val()||{};
+    const machines=[];
+    Object.keys(data).forEach(key=>{
+      if(data[key] && data[key].active_user){
+        machines.push({id:key,active_user:data[key].active_user});
+      }
+    });
+    if(machines.length>0 && allMachines.length===0){
+      allMachines=machines;
+      document.getElementById('ov-machines').innerText=machines.length;
+      renderMachineTable();
+    }
+  });
+}
+
+function renderMachineTable(){
+  const el=document.getElementById('machine-list');
+  if(!el)return;
+  
+  if(allMachines.length===0){
+    el.innerHTML='<tr><td colspan="5" class="empty-state"><i class="fas fa-microchip"></i><br>Belum ada mesin terdaftar<br><small style="color:#999;font-size:11px">Mesin akan muncul saat user login via QR mesin</small></td></tr>';
+    return;
+  }
+  
+  let h='';
+  allMachines.forEach(m=>{
+    const au=m.active_user||{};
+    const isOnline=au.id && (Date.now()-(au.last_activity||0))<300000;
+    h+=`<tr>
+      <td><strong>${escapeHtml(m.id)}</strong></td>
+      <td><span class="badge ${isOnline?'online':'offline'}">${isOnline?'🟢 Online':'🔴 Offline'}</span></td>
+      <td>${au.id?escapeHtml(au.id.substring(0,16))+'...':'-'}</td>
+      <td>${au.login_time?formatDate(au.login_time):'-'}</td>
+      <td>${au.last_activity?formatDate(au.last_activity):'-'}</td>
+    </tr>`;
+  });
+  el.innerHTML=h;
+}
+
+// ============================================================
+// 7. MONITOR PENARIKAN USER
+// ============================================================
+function loadWithdrawals(){
+  db.ref('/withdrawals').on('value',snap=>{
+    allWithdrawals=[];
+    snap.forEach(userChild=>{
+      const uid=userChild.key;
+      userChild.forEach(w=>{
+        allWithdrawals.push({id:w.key,uid:uid,...w.val()});
+      });
+    });
+    allWithdrawals.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+    renderWithdrawalTable();
+  });
+}
+
+function renderWithdrawalTable(){
+  const el=document.getElementById('withdrawal-list');
+  if(!el)return;
+  
+  if(allWithdrawals.length===0){
+    el.innerHTML='<tr><td colspan="7" class="empty-state"><i class="fas fa-money-bill-wave"></i><br>Belum ada permintaan penarikan</td></tr>';
+    return;
+  }
+  
+  let h='';
+  allWithdrawals.forEach(w=>{
+    const statusBadge=w.status==='pending'?'warning':w.status==='approved'?'success':w.status==='rejected'?'danger':'gray';
+    h+=`<tr>
+      <td>${formatDate(w.timestamp)}</td>
+      <td><strong>${escapeHtml(w.user_email||w.uid||'-')}</strong></td>
+      <td><span class="badge info">${w.method||'-'}</span></td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(w.details||'-')}</td>
+      <td><strong>${formatRupiah(w.amount)}</strong></td>
+      <td><span class="badge ${statusBadge}">${w.status||'pending'}</span></td>
+      <td>
+        ${w.status==='pending'?`
+          <button class="btn btn-success" onclick="updateWithdrawal('${w.uid}','${w.id}','approved')"><i class="fas fa-check"></i></button>
+          <button class="btn btn-danger" onclick="updateWithdrawal('${w.uid}','${w.id}','rejected')"><i class="fas fa-times"></i></button>
+        `:'<span style="color:var(--text2);font-size:11px">Selesai</span>'}
+      </td>
+    </tr>`;
+  });
+  el.innerHTML=h;
+}
+
+function updateWithdrawal(uid,wid,status){
+  if(!confirm(`Yakin ingin menandai penarikan ini sebagai "${status}"?`))return;
+  db.ref(`/withdrawals/${uid}/${wid}`).update({status:status,processed_at:Date.now()})
+    .then(()=>{showToast(`✅ Penarikan ditandai: ${status}`,'success')})
+    .catch(e=>showToast('❌ Gagal: '+e.message,'error'));
+}
+
+// ============================================================
+// 9. MONITOR MERCHANT
+// ============================================================
+function loadMerchants(){loadOverview()}
+
+function renderMerchantTable(){
+  const el=document.getElementById('merchant-list');
+  if(!el)return;
+  
+  if(allMerchants.length===0){
+    el.innerHTML='<tr><td colspan="6" class="empty-state"><i class="fas fa-store"></i><br>Belum ada merchant terdaftar</td></tr>';
+    return;
+  }
+  
+  let h='';
+  allMerchants.forEach(m=>{
+    const produkCount=allProducts.filter(p=>p.merchant_id===m.id).length;
+    h+=`<tr>
+      <td><strong>${escapeHtml(m.nama_toko||'Toko')}</strong></td>
+      <td>${escapeHtml(m.email||m.email_merchant||'-')}</td>
+      <td>${escapeHtml(m.alamat||'-')}</td>
+      <td><span class="badge info">${produkCount} produk</span></td>
+      <td><strong>${formatRupiah(m.saldo||0)}</strong></td>
+      <td>
+        <button class="btn btn-secondary" onclick="viewMerchantProducts('${m.id}')"><i class="fas fa-box"></i></button>
+        <button class="btn btn-primary" onclick="viewMerchantOrders('${m.id}')"><i class="fas fa-receipt"></i></button>
+      </td>
+    </tr>`;
+  });
+  el.innerHTML=h;
+}
+
+function viewMerchantProducts(mid){
+  const produk=allProducts.filter(p=>p.merchant_id===mid);
+  if(produk.length===0){alert('Merchant ini belum punya produk');return}
+  let msg='📦 PRODUK MERCHANT:\n\n';
+  produk.forEach(p=>{msg+=`• ${p.name} - ${formatRupiah(p.price)} (stok: ${p.stock||0})\n`});
+  alert(msg);
+}
+
+function viewMerchantOrders(mid){
+  db.ref(`/merchant_orders/${mid}`).limitToLast(20).once('value').then(snap=>{
+    const orders=[];
+    snap.forEach(c=>{orders.push({id:c.key,...c.val()})});
+    if(orders.length===0){alert('Belum ada pesanan untuk merchant ini');return}
+    let msg='📋 PESANAN TERAKHIR:\n\n';
+    orders.slice(0,10).forEach(o=>{
+      msg+=`#${o.id.slice(-8)} - ${formatRupiah(o.subtotal||o.total||0)} - ${o.status||'diproses'}\n`;
+    });
+    alert(msg);
+  });
+}
+
+// ============================================================
+// 8. INVESTOR
+// ============================================================
+function loadInvestors(){
+  db.ref('/investors').on('value',snap=>{
+    allInvestors=[];
+    snap.forEach(c=>{allInvestors.push({id:c.key,...c.val()})});
+    renderInvestorTable();
+  });
+}
+
+function renderInvestorTable(){
+  const el=document.getElementById('investor-list');
+  if(!el)return;
+  
+  if(allInvestors.length===0){
+    el.innerHTML='<tr><td colspan="6" class="empty-state"><i class="fas fa-chart-pie"></i><br>Belum ada investor terdaftar<br><small style="color:#999;font-size:11px">Tambahkan investor di Firebase: /investors/{id}</small></td></tr>';
+    return;
+  }
+  
+  let h='';
+  allInvestors.forEach(inv=>{
+    h+=`<tr>
+      <td><strong>${escapeHtml(inv.nama||'-')}</strong></td>
+      <td>${escapeHtml(inv.email||'-')}</td>
+      <td>${formatRupiah(inv.modal||0)}</td>
+      <td>${formatRupiah(inv.saldo||0)}</td>
+      <td><span class="badge warning">${inv.penarikan_count||0}x</span></td>
+      <td><button class="btn btn-primary" onclick="viewInvestorDetail('${inv.id}')"><i class="fas fa-eye"></i> Detail</button></td>
+    </tr>`;
+  });
+  el.innerHTML=h;
+}
+
+function viewInvestorDetail(id){
+  const inv=allInvestors.find(x=>x.id===id);
+  if(!inv)return;
+  alert(`📊 DETAIL INVESTOR\n\nNama: ${inv.nama}\nEmail: ${inv.email}\nModal: ${formatRupiah(inv.modal)}\nSaldo: ${formatRupiah(inv.saldo)}\nPenarikan: ${inv.penarikan_count||0}x\n\nTotal Penarikan: ${formatRupiah(inv.total_penarikan||0)}`);
+}
+
+// ============================================================
+// 6. BROADCAST
+// ============================================================
+function loadBroadcasts(){
+  db.ref('/broadcasts').limitToLast(20).on('value',snap=>{
+    allBroadcasts=[];
+    snap.forEach(c=>{allBroadcasts.push({id:c.key,...c.val()})});
+    allBroadcasts.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+    renderBroadcastHistory();
+  });
+}
+
+function sendBroadcast(){
+  const title=document.getElementById('bc-title').value.trim();
+  const message=document.getElementById('bc-message').value.trim();
+  const priority=document.getElementById('bc-priority').value;
+  
+  if(!title||!message){
+    showToast('⚠️ Judul dan isi pesan wajib diisi','error');
+    return;
+  }
+  
+  if(!confirm(`Kirim broadcast "${title}" ke SEMUA user?`))return;
+  
+  const bid='BC'+Date.now();
+  const broadcast={
+    id:bid,
+    title:title,
+    message:message,
+    priority:priority,
+    target:'all',
+    timestamp:Date.now(),
+    sender:'admin'
+  };
+  
+  db.ref('/broadcasts/'+bid).set(broadcast)
+    .then(()=>{
+      showToast('✅ Broadcast berhasil dikirim ke semua user!','success');
+      document.getElementById('bc-title').value='';
+      document.getElementById('bc-message').value='';
+    })
+    .catch(e=>showToast('❌ Gagal: '+e.message,'error'));
+}
+
+function renderBroadcastHistory(){
+  const el=document.getElementById('broadcast-history');
+  if(!el)return;
+  
+  if(allBroadcasts.length===0){
+    el.innerHTML='<tr><td colspan="4" class="empty-state"><i class="fas fa-bullhorn"></i><br>Belum ada broadcast</td></tr>';
+    return;
+  }
+  
+  let h='';
+  allBroadcasts.forEach(b=>{
+    const pBadge=b.priority==='high'?'danger':b.priority==='medium'?'warning':'info';
+    const pLabel=b.priority==='high'?'🔴 Penting':b.priority==='medium'?'🟡 Info':'🔵 Umum';
+    h+=`<tr>
+      <td>${formatDate(b.timestamp)}</td>
+      <td><strong>${escapeHtml(b.title||'-')}</strong></td>
+      <td><span class="badge ${pBadge}">${pLabel}</span></td>
+      <td>
+        <button class="btn btn-danger" onclick="deleteBroadcast('${b.id}')"><i class="fas fa-trash"></i></button>
+      </td>
+    </tr>`;
+  });
+  el.innerHTML=h;
+}
+
+function deleteBroadcast(id){
+  if(!confirm('Yakin ingin hapus broadcast ini?'))return;
+  db.ref('/broadcasts/'+id).remove()
+    .then(()=>showToast('✅ Broadcast dihapus','success'))
+    .catch(e=>showToast('❌ Gagal: '+e.message,'error'));
+}
+
+function exportEmails(){
+  if(allUsers.length===0){
+    showToast('⚠️ Belum ada user terdaftar','error');
+    return;
+  }
+  const emails=allUsers.map(u=>u.email).filter(e=>e).join(', ');
+  document.getElementById('email-list-export').value=emails;
+  
+  // Auto copy
+  navigator.clipboard.writeText(emails).then(()=>{
+    showToast('✅ '+allUsers.length+' email berhasil di-copy ke clipboard!','success');
+  }).catch(()=>{
+    showToast('📋 Email dimuat. Silakan copy manual.','info');
+  });
+}
+
+// ============================================================
+// AKTIVITAS TERBARU
+// ============================================================
+function renderAktivitas(){
+  const el=document.getElementById('ov-aktivitas');
+  if(!el)return;
+  
+  // Gabungkan user + withdrawal terbaru
+  const activities=[];
+  
+  allUsers.slice(0,5).forEach(u=>{
+    if(u.created_at)activities.push({type:'user',time:u.created_at,email:u.email,detail:'User terdaftar'});
+  });
+  
+  allWithdrawals.slice(0,5).forEach(w=>{
+    activities.push({type:'withdrawal',time:w.timestamp,email:w.user_email,detail:'Penarikan '+formatRupiah(w.amount)});
+  });
+  
+  allBroadcasts.slice(0,3).forEach(b=>{
+    activities.push({type:'broadcast',time:b.timestamp,email:'Admin',detail:'Broadcast: '+b.title});
+  });
+  
+  activities.sort((a,b)=>b.time-a.time);
+  
+  if(activities.length===0){
+    el.innerHTML='<tr><td colspan="4" class="empty-state">Belum ada aktivitas</td></tr>';
+    return;
+  }
+  
+  const icons={user:'👤',withdrawal:'💰',broadcast:'📢'};
+  let h='';
+  activities.slice(0,10).forEach(a=>{
+    h+=`<tr>
+      <td>${formatDate(a.time)}</td>
+      <td>${escapeHtml(a.email||'-')}</td>
+      <td>${icons[a.type]||'📌'} ${a.type}</td>
+      <td>${escapeHtml(a.detail)}</td>
+    </tr>`;
+  });
+  el.innerHTML=h;
+}
+
+// ============================================================
+// AUTO REFRESH SETIAP 60 DETIK
+// ============================================================
+setInterval(()=>{
+  if(auth.currentUser && ADMIN_EMAILS.includes(auth.currentUser.email)){
+    loadOverview();
+  }
+},60000);
+</script>
+</body>
+</html>1
